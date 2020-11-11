@@ -35,7 +35,7 @@ class JSONValidator:
             parameter_value = json_dict[parameter_name]
             is_same_type, required_type = function(value=parameter_value)
             if not is_same_type:
-                message = f"The parameter '{parameter_name}' is not of type {required_type}"
+                message = f"Wrong parameter type. Got '{type(parameter_name)}'. Expected {required_type}"
                 response_dict = {'Error': message}
                 response_json = jsonify(response_dict)
                 raise InvalidParameterTypeException(message=message, response_json=response_json)

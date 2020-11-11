@@ -49,6 +49,21 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
         self.assertIn('parameters are required', response_json_str)
 
+    def test_sector_add_invalid_parameter_type(self):
+        """ Test if the API can create a sector with invalid parameter types (POST request) """
+        sector = {'name': 123}
+        url = BASE_URL + f'/add/test'
+
+        response = self.client().post(url, json=sector)
+
+        response_code = response.status_code
+        expected_code = 422
+
+        response_json_str = str(response.get_json())
+
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Wrong parameter type', response_json_str)
+
     def test_list_all_sectors(self):
         """ Test if the API can list all sectors (GET request) """
 
