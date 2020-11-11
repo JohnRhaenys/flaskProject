@@ -64,7 +64,7 @@ def list_all_collaborators():
     all_collaborators = Collaborator.query.order_by(Collaborator.full_name).all()
     result = collaborators_schema.dump(all_collaborators)
     if not result:
-        return jsonify({'Message': 'No collaborators registered'}), 404
+        return jsonify({'Error': 'No collaborators found'}), 404
     return jsonify(result)
 
 

@@ -157,8 +157,19 @@ class CollaboratorTestCase(unittest.TestCase):
         self.assertIn('Joao', response_json_str)
         self.assertIn('Anna', response_json_str)
 
+    def test_list_all_collaborators_empty(self):
+        """ Test if the API can list all collaborators - empty - (GET request) """
 
+        # Retrieve the data
+        url = COLLABORATORS_BASE_URL + '/all'
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 404
+        response_json_str = str(response.get_json())
 
+        # Verify the response
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('No collaborators found', response_json_str)
 
 
 
