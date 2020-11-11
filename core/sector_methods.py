@@ -48,7 +48,7 @@ def list_all_sectors():
     all_sectors = Sector.query.order_by(Sector.name).all()
     result = sectors_schema.dump(all_sectors)
     if not result:
-        return jsonify({'Message': 'No sectors registered'}), 404
+        return jsonify({'Error': 'No sectors found'}), 404
     return jsonify(result)
 
 
@@ -59,11 +59,6 @@ def list_filtered_sectors(name):
     :return: JSON string containing data about all sectors, if found. Else, a JSON string
     with an exception_handling message
     """
-    try:
-        JSONValidator.validate_parameter_types(object=Sector, json_dict={'name': name})
-    except InvalidParameterTypeException as e:
-        return e.response_json, 422
-
     all_sectors = Sector\
         .query\
         .filter(Sector.name.like('%' + name + '%'))\

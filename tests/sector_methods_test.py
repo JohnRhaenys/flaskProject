@@ -64,6 +64,26 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
         self.assertIn('Wrong parameter type', response_json_str)
 
+    def test_add_sector_already_exists(self):
+        """ Test if the API can create a sector (POST request) """
+        url = BASE_URL + f'/add/{self.sector["name"]}'
+
+        # Add the sector
+        response = self.client().post(url, json=self.sector)
+        response_code = response.status_code
+        expected_code = 200
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Tecnologia', response_json_str)
+
+        # Try to add the same sector again
+        response = self.client().post(url, json=self.sector)
+        response_code = response.status_code
+        expected_code = 409
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn(f'Sector already exists with name = {self.sector["name"]}', response_json_str)
+
     def test_list_all_sectors(self):
         """ Test if the API can list all sectors (GET request) """
 
@@ -90,6 +110,20 @@ class SectorTestCase(unittest.TestCase):
         self.assertIn('Recursos Humanos', response_json_str)
         self.assertIn('Recursos Tecnológicos', response_json_str)
         self.assertIn('Limpeza', response_json_str)
+
+    def test_list_all_sectors_empty(self):
+        """ Test if the API can list all sectors - empty - (GET request) """
+
+        # Retrieve the data
+        url = BASE_URL + '/all'
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 404
+        response_json_str = str(response.get_json())
+
+        # Verify the response
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('No sectors found', response_json_str)
 
     def test_list_all_sectors_filtered(self):
         """ Test if the API can list all sectors filtered by name (GET request) """
@@ -122,7 +156,7 @@ class SectorTestCase(unittest.TestCase):
         self.assertNotIn('Limpeza', response_json_str)
 
     def test_api_can_get_sector_by_name(self):
-        """ Test if the API can get a single sector by using its id (GET request) """
+        """ Test if the API can get a single sector by using its name (GET request) """
 
         sector1 = {'name': 'Recursos Humanos'}
         sector2 = {'name': 'Recursos Tecnológicos'}
@@ -152,6 +186,35 @@ class SectorTestCase(unittest.TestCase):
             self.assertIn(sector_name, response_json_str)
             self.assertIn(sector_name, response_json_str)
             self.assertIn(sector_name, response_json_str)
+
+    def test_api_can_get_sector_by_name_does_not_exist(self):
+        """
+        Test if the API can get a single sector by using its name,
+        given that the sector does not exist in the database - (GET request)
+        """
+        url = BASE_URL + f'/add/{self.sector["name"]}'
+
+        # Add the sector
+        response = self.client().post(url, json=self.sector)
+        response_code = response.status_code
+        expected_code = 200
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Tecnologia', response_json_str)
+
+        # Try to retrieve a sector that does not exist
+        sector = {'name': 'Negócios'}
+        url = BASE_URL + f'/{sector["name"]}'
+
+        # Verify response code
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn(f'Sector not found with name = {sector["name"]}', response_json_str)
 
     def test_api_can_update_sector(self):
         """ Test if the API can update a single sector by using its name (PUT) """
@@ -189,6 +252,68 @@ class SectorTestCase(unittest.TestCase):
 
         response_json_str = str(response.get_json())
         self.assertEqual(f"{{'Error': 'Sector not found with name = {sector_name}'}}", response_json_str)
+
+    def test_api_can_update_sector_empty_parameters(self):
+        """ Test if the API can update a single sector by using its name (PUT) """
+
+        # Insert the sector
+        sector_name = self.sector['name']
+        response = self.client().post(f'{BASE_URL}/add/{sector_name}', json=self.sector)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to update it with an empty sector
+        empty_sector = {}
+
+        url = BASE_URL + f'/update/{self.sector["name"]}'
+        response = self.client().put(url, json=empty_sector)
+
+        # Verify the response code
+        response_code = response.status_code
+        expected_code = 422
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('parameters are required', response_json_str)
+
+    def test_api_can_update_sector_invalid_parameters(self):
+        """ Test if the API can update a single sector by using its name (PUT) """
+
+        # Insert the sector
+        sector_name = self.sector['name']
+        response = self.client().post(f'{BASE_URL}/add/{sector_name}', json=self.sector)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to update it with an empty sector
+        new_sector = {'name': 123}
+
+        url = BASE_URL + f'/update/{self.sector["name"]}'
+        response = self.client().put(url, json=new_sector)
+
+        # Verify the response code
+        response_code = response.status_code
+        expected_code = 422
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Wrong parameter type', response_json_str)
+
+    def test_api_can_update_sector_that_doesnt_exist(self):
+        """ Test if the API can update a sector that doesn't exist (PUT) """
+
+        # Try to update it a sector that doesnt exist
+        sector = {'name': 'Does not exist'}
+
+        url = BASE_URL + f'/update/{sector["name"]}'
+        response = self.client().put(url, json=sector)
+
+        # Verify the response code
+        response_code = response.status_code
+        expected_code = 404
+        response_json_str = str(response.get_json())
+        self.assertEqual(expected_code, response_code)
+        self.assertIn(f'Sector not found with name = {sector["name"]}', response_json_str)
 
     def test_api_can_delete_sector(self):
         """ Test if the API can delete a single sector by using its name (DELETE) """
