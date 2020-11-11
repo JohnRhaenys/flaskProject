@@ -120,6 +120,49 @@ class CollaboratorTestCase(unittest.TestCase):
         self.assertIn(
             f'Collaborator already exists with number = {self.collaborator["collab_number"]}', response_json_str)
 
+    def test_list_all_collaborators(self):
+        """ Test if the API can list all collaborators (GET request) """
+
+        # First, we add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert collaborators
+        collaborator2 = self.collaborator.copy()
+        collaborator2['collab_number'] = 10
+        collaborator2['full_name'] = 'Joao'
+
+        collaborator3 = self.collaborator.copy()
+        collaborator3['collab_number'] = 20
+        collaborator3['full_name'] = 'Anna'
+
+        collaborators = [self.collaborator, collaborator2, collaborator3]
+        for collaborator in collaborators:
+            response = self.client().post(
+                f'{COLLABORATORS_BASE_URL}/add/{collaborator["collab_number"]}', json=collaborator
+            )
+            response_code = response.status_code
+            expected_code = 200
+            self.assertEqual(response_code, expected_code)
+
+        # Retrieve the data
+        url = COLLABORATORS_BASE_URL + '/all'
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 200
+        response_json_str = str(response.get_json())
+
+        # Verify the response
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Bernardino', response_json_str)
+        self.assertIn('Joao', response_json_str)
+        self.assertIn('Anna', response_json_str)
+
+
+
+
+
+
+
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()
