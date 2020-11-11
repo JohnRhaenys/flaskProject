@@ -34,6 +34,21 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
         self.assertIn('Tecnologia', response_json_str)
 
+    def test_sector_add_no_parameters(self):
+        """ Test if the API can create a sector with missing parameters (POST request) """
+        sector = {}
+        url = BASE_URL + f'/add/test'
+
+        response = self.client().post(url, json=sector)
+
+        response_code = response.status_code
+        expected_code = 422
+
+        response_json_str = str(response.get_json())
+
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('parameters are required', response_json_str)
+
     def test_list_all_sectors(self):
         """ Test if the API can list all sectors (GET request) """
 
