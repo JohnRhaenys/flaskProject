@@ -350,6 +350,22 @@ class SectorTestCase(unittest.TestCase):
         response_json_str = str(response.get_json())
         self.assertEqual(f"{{'Error': 'Sector not found with name = {sector_name}'}}", response_json_str)
 
+    def test_api_can_delete_sector_that_doesnt_exist(self):
+        """ Test if the API can delete a sector that doesn't exist - (DELETE) """
+
+        # Try to delete the sector that is not in the database
+        url = f'{BASE_URL}/delete/{self.sector["name"]}'
+        response = self.client().delete(url)
+
+        # Verify the response code
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn(f'Sector not found with name = {self.sector["name"]}', response_json_str)
+
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()
