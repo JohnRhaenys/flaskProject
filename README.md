@@ -1,7 +1,8 @@
 # flaskProject
 
-REST API for manipulating data about sectors and collaborators in a company
-Language and technologies: Python (Version 3.6.9), Flask, SQLAlchemy and Marshmallow
+REST API for manipulating data about sectors and collaborators in a company.
+
+Language and technologies: Python (Version 3.6.9), Flask, SQLAlchemy and Marshmallow.
 
 Functionalities:
 1) The API offers endpoints for listing, reading, creating, updating and deleting sectors and collaborators.
