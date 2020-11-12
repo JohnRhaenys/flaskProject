@@ -128,3 +128,14 @@ OUTPUT:
 Response code:  200  
 Response JSON:  {'collab_number': 1, 'full_name': 'Bernardino', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 999.99, 'active': True}  
 
+**DELETE A COLLABORATOR**
+```python
+# Try to remove the collaborator
+collab_number = 1
+response = requests.delete(f'{COLLABORATORS_URL}/delete/{collab_number}')
+```
+OUTPUT:  
+Response code:  200    
+Response JSON:  {'Message': 'Successfully deleted'}  
+
+
