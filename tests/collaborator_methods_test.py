@@ -208,6 +208,289 @@ class CollaboratorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
         self.assertIn('No collaborators found', response_json_str)
 
+    def test_api_can_get_collaborator_by_number(self):
+        """ Test if the API can get a single collaborator given his number (GET request) """
+
+        # First, we add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert collaborators
+        collaborator2 = self.collaborator.copy()
+        collaborator2['collab_number'] = 10
+        collaborator2['full_name'] = 'Joao Vitor Andrade'
+
+        collaborator3 = self.collaborator.copy()
+        collaborator3['collab_number'] = 20
+        collaborator3['full_name'] = 'Joao Pedro Da Silva'
+
+        collaborators = [self.collaborator, collaborator2, collaborator3]
+        for collaborator in collaborators:
+            response = self.client().post(
+                f'{COLLABORATORS_BASE_URL}/add/{collaborator["collab_number"]}', json=collaborator
+            )
+            response_code = response.status_code
+            expected_code = 200
+            self.assertEqual(response_code, expected_code)
+
+        # Try to retrieve each sector by name
+        for collaborator in collaborators:
+            collab_number = collaborator['collab_number']
+            url = f'{COLLABORATORS_BASE_URL}/{collab_number}'
+
+            # Verify response code
+            response = self.client().get(url)
+            response_code = response.status_code
+            expected_code = 200
+            self.assertEqual(response_code, expected_code)
+
+            # Verify response content
+            response_json_str = str(response.get_json())
+            self.assertIn(str(collaborator['collab_number']), response_json_str)
+
+    def test_api_can_get_collaborator_by_number_does_not_exist(self):
+        """
+        Test if the API can get a single collaborator by using their number,
+        given that the collaborator does not exist in the database - (GET request)
+        """
+        # First, we add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        response = self.client().post(url, json=self.collaborator)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to retrieve a collaborator who does not exist
+        url = f'{COLLABORATORS_BASE_URL}/-200'
+
+        # Verify response code
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn('Collaborator not found with number = -200', response_json_str)
+
+    def test_api_can_get_collaborator_by_number_invalid_parameter_type(self):
+        """
+        Test if the API can get a single collaborator by using their number,
+        given that the parameter passed is not correct - (GET request)
+        """
+        # First, we add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        response = self.client().post(url, json=self.collaborator)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to get a collaborator using an invalid parameter type
+        invalid_number = 'STRING_TEST'
+        url = f'{COLLABORATORS_BASE_URL}/{invalid_number}'
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 400
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn(f"The parameter '{invalid_number}' cannot be parsed", response_json_str)
+
+    def test_api_can_update_collaborator(self):
+        """ Test if the API can update a single collaborator by using his/her number (PUT) """
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        response = self.client().post(url, json=self.collaborator)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Change a field in the collaborator
+        updated_data = self.collaborator.copy()
+        updated_data['current_salary'] = 9999.00
+
+        # Try to update the collaborator
+        url = COLLABORATORS_BASE_URL + f'/update/{updated_data["collab_number"]}'
+        response = self.client().put(url, json=updated_data)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertEqual(str(updated_data), response_json_str)
+
+    def test_api_can_update_collaborator_empty_parameters(self):
+        """ Test if the API can update a single collaborator given empty parameters (PUT) """
+
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        response = self.client().post(url, json=self.collaborator)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to update the collaborator passing an empty object
+        url = COLLABORATORS_BASE_URL + f'/update/{self.collaborator["collab_number"]}'
+        empty_data = {}
+        response = self.client().put(url, json=empty_data)
+        response_code = response.status_code
+        expected_code = 422
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn('parameters are required', response_json_str)
+
+    def test_api_can_update_collaborator_invalid_parameter_types(self):
+        """ Test if the API can update a single collaborator given invalid parameters (PUT) """
+
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        response = self.client().post(url, json=self.collaborator)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Try to update the collaborator passing an empty object
+        url = COLLABORATORS_BASE_URL + f'/update/{self.collaborator["collab_number"]}'
+
+        invalid_collaborator = {
+            'collab_number': self.collaborator['collab_number'],
+            'full_name': 1234,
+            'birth_date': 3.14,
+            'current_salary': 'Teste',
+            'active': -2,
+            'sector_name': True
+        }
+
+        response = self.client().put(url, json=invalid_collaborator)
+        response_code = response.status_code
+        expected_code = 422
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn('Wrong parameter type', response_json_str)
+
+    def test_api_can_update_collaborator_that_doesnt_exist(self):
+        """ Test if the API can update a single collaborator that doesn't exist (PUT) """
+
+        collab_number = self.collaborator['collab_number']
+
+        # Try to update a collaborator that doesn't exist
+        url = COLLABORATORS_BASE_URL + f'/update/{collab_number}'
+
+        response = self.client().put(url, json=self.collaborator)
+
+        # Verify response code
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertEqual(
+            f"{{'Error': 'Collaborator not found with number = {collab_number}'}}", response_json_str
+        )
+
+    def test_api_can_delete_collaborator(self):
+        """ Test if the API can delete a single collaborator given his number (DELETE) """
+
+        collaborator_number = self.collaborator['collab_number']
+
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{collaborator_number}'
+        self.client().post(url, json=self.collaborator)
+
+        # Try to remove the collaborator
+        url = f'{COLLABORATORS_BASE_URL}/delete/{collaborator_number}'
+        response = self.client().delete(url)
+        response_code = response.status_code
+        expected_code = 200
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn('Successfully deleted', response_json_str)
+
+        # Check whether the deletion took effect
+        url = COLLABORATORS_BASE_URL + f'/{collaborator_number}'
+
+        response = self.client().get(url)
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        response_json_str = str(response.get_json())
+        self.assertEqual(
+            f"{{'Error': 'Collaborator not found with number = {collaborator_number}'}}", response_json_str
+        )
+
+    def test_api_can_delete_collaborator_invalid_parameter_type(self):
+        """ Test if the API can delete a single collaborator given his number (DELETE) """
+
+        collaborator_number = self.collaborator['collab_number']
+
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{collaborator_number}'
+        self.client().post(url, json=self.collaborator)
+
+        # Try to remove the collaborator
+        invalid_number = 'NUMBER_TEST'
+        url = f'{COLLABORATORS_BASE_URL}/delete/{invalid_number}'
+        response = self.client().delete(url)
+        response_code = response.status_code
+        expected_code = 400
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn('cannot be parsed', response_json_str)
+
+    def test_api_can_delete_collaborator_that_doesnt_exist(self):
+        """ Test if the API can delete a single collaborator given his number (DELETE) """
+
+        # Add a sector
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert a collaborator
+        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
+        self.client().post(url, json=self.collaborator)
+
+        # Try to remove the collaborator
+        not_in_database = -100
+        url = f'{COLLABORATORS_BASE_URL}/delete/{not_in_database}'
+        response = self.client().delete(url)
+        response_code = response.status_code
+        expected_code = 404
+        self.assertEqual(response_code, expected_code)
+
+        # Verify response content
+        response_json_str = str(response.get_json())
+        self.assertIn(f'Collaborator not found with number = {not_in_database}', response_json_str)
+
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()

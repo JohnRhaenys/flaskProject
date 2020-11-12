@@ -11,14 +11,15 @@ class Collaborator(db.Model):
 
     collab_number = Column(Integer, nullable=False)
     full_name = Column(String(100), nullable=False)
-    birth_date = Column(String, nullable=False)
+    birth_date = Column(String, nullable=False)  # Change to DateTime
     current_salary = Column(Float, nullable=False)
     active = Column(Boolean, nullable=False)
     sector_id = Column(Integer, ForeignKey('sector.id'), nullable=False)
 
     def __init__(self, collab_number, full_name, birth_date, current_salary, active, sector_name):
 
-        # Different from the ID, which is a primary key used internally *
+        # Used to find a single collaborator in the database
+        # Analogy: like someone's social security number or a student number in a school, for instance
         self.collab_number = collab_number
 
         self.full_name = full_name

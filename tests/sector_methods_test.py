@@ -302,7 +302,7 @@ class SectorTestCase(unittest.TestCase):
     def test_api_can_update_sector_that_doesnt_exist(self):
         """ Test if the API can update a sector that doesn't exist (PUT) """
 
-        # Try to update it a sector that doesnt exist
+        # Try to update a sector that doesn't exist
         sector = {'name': 'Does not exist'}
 
         url = BASE_URL + f'/update/{sector["name"]}'
@@ -317,7 +317,6 @@ class SectorTestCase(unittest.TestCase):
 
     def test_api_can_delete_sector(self):
         """ Test if the API can delete a single sector by using its name (DELETE) """
-
         # Insert the sector
         sector_name = self.sector["name"]
 

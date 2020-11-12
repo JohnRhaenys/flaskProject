@@ -112,7 +112,7 @@ def get(collab_number):
 
     # If the collaborator does not exist
     if not collaborator:
-        return jsonify({'Error': f'Collaborator not found with id = {collab_number}'}), 404
+        return jsonify({'Error': f'Collaborator not found with number = {collab_number}'}), 404
 
     return collaborator_schema.jsonify(collaborator), 200
 
@@ -170,13 +170,14 @@ def delete(collab_number):
     :return: JSON string containing data about the collaborator, if found. Else, a JSON string
     with an exception_handling message
     """
+    # We try to parse the number
     try:
-        JSONValidator.validate_parameter_types(object=Collaborator, json_dict=request.json)
-    except InvalidParameterTypeException as e:
-        return e.response_json, 422
+        collab_number = int(collab_number)
+    except ValueError:
+        return jsonify({'Error': f"The parameter '{collab_number}' cannot be parsed"}), 400
 
     # We try to find the collaborator
-    collaborator = Collaborator.query.filter_by(collab_number=collab_number)
+    collaborator = Collaborator.query.filter_by(collab_number=collab_number).first()
 
     # If the collaborator does not exist
     if not collaborator:

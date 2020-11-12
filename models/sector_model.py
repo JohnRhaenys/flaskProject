@@ -14,7 +14,7 @@ class Sector(db.Model):
     name = Column(String(100), nullable=False)
 
     # Creates a pseudo column in the Collaborator table
-    collaborators = relationship('Collaborator', backref='sector')
+    collaborators = relationship('Collaborator', cascade='all,delete', backref='sector')
 
     def __init__(self, name):
         self.name = name
