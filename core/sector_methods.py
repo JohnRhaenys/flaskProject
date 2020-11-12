@@ -10,7 +10,7 @@ sector_methods = Blueprint('sector_methods', __name__)
 def add(sector_name):
     """
     Inserts a new sector into the database
-    :param sector_name: The name of the sector (Tecnologia de Informação, Finanças ...)
+    :param sector_name: The name of the sector (Tecnologia de Informacao, Financas ...)
     :return: JSON string containing data about the sector, if added successfully.
     Else, a JSON string with an error message
     """
