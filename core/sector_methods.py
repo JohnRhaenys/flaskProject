@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint, request
 
-from core import database
+from database import database
 from models.sector_model import Sector, sectors_schema, sector_schema
 
 sector_methods = Blueprint('sector_methods', __name__)

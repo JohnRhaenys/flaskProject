@@ -2,7 +2,7 @@ import unittest
 
 
 from __init__ import create_app
-from core.database import db
+from database.database import db
 from datetime import datetime
 
 

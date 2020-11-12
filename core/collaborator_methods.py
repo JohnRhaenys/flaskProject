@@ -1,7 +1,6 @@
 from flask import jsonify, Blueprint, request
 
-from core import database
-
+from database import database
 
 from models.sector_model import Sector
 from models.collaborator_model import collaborators_schema, Collaborator, collaborator_schema

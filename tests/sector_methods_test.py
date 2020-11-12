@@ -1,7 +1,7 @@
 import unittest
 
 from __init__ import create_app
-from core.database import db
+from database.database import db
 
 
 BASE_URL = 'http://127.0.0.1:5000/sectors'

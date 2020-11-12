@@ -1,7 +1,7 @@
 from flask import Flask
 
 from core.collaborator_methods import collaborator_methods
-from core.database import db, ma
+from database.database import db, ma
 from core.sector_methods import sector_methods
 
 
