@@ -16,16 +16,17 @@ collaborator_methods = Blueprint('collaborator_methods', __name__)
 def add(collab_number):
     """
     Inserts a new collaborator into the database
-    :return: JSON string containing data about the collaborator
+    :return: JSON string containing data about the collaborator, if added successfully.
+    Else, a JSON string with an error message
     """
     try:
-        JSONValidator.check_parameters(object=Collaborator, json_dict=request.json)
+        JSONValidator.check_parameters(object_model=Collaborator, json_dict=request.json)
     except NotEnoughParametersException as e:
         return e.response_json, 422
     except InvalidParameterTypeException as e:
         return e.response_json, 422
 
-    # Check whether the collaborator does not already exist
+    # Check whether the Collaborator does not already exist
     collaborator = Collaborator.query.filter_by(collab_number=collab_number).first()
     if collaborator:
         return jsonify({'Error': f'Collaborator already exists with number = {collab_number}'}), 409
@@ -34,10 +35,11 @@ def add(collab_number):
     sector_name = request.json['sector_name']
     sector = Sector.query.filter_by(name=sector_name).first()
 
+    # Verify whether the Sector exists (we can't add a collaborator to a Sector that doesn't exist)
     if not sector:
         return jsonify({'Error': f'Sector not found with name = {sector_name}'}), 409
 
-    # Create an instance of Collaborator
+    # Insert the collaborator and persist the data
     new_collaborator = Collaborator(
         collab_number=request.json['collab_number'],
         full_name=request.json['full_name'],
@@ -47,8 +49,6 @@ def add(collab_number):
         sector_name=sector_name,
     )
     new_collaborator.sector = sector
-
-    # Persist the data
     database.insert(new_collaborator)
 
     return collaborator_schema.jsonify(new_collaborator), 200
@@ -57,9 +57,9 @@ def add(collab_number):
 @collaborator_methods.route('/collaborators/all', methods=['GET'])
 def list_all_collaborators():
     """
-    Lists the collaborators in the database ordered by name
-    :return: JSON string containing data about all collaborators, if found. Else, a JSON string
-    with an exception_handling message
+    Lists the collaborators in the database (ordered by name)
+    :return: JSON string containing data about all collaborators, if found.
+    Else, a JSON string with an error message
     """
     all_collaborators = Collaborator.query.order_by(Collaborator.full_name).all()
     result = collaborators_schema.dump(all_collaborators)
@@ -78,7 +78,7 @@ def list_filtered_collaborators(name):
     with an error message
     """
     try:
-        JSONValidator.validate_parameter_types(object=Collaborator, json_dict={'full_name': name})
+        JSONValidator.validate_parameter_types(object_model=Collaborator, json_dict={'full_name': name})
     except InvalidParameterTypeException as e:
         return e.response_json, 422
 
@@ -96,21 +96,19 @@ def list_filtered_collaborators(name):
 @collaborator_methods.route('/collaborators/<collab_number>', methods=['GET'])
 def get(collab_number):
     """
-    Given the collab_number of a collaborator, queries the database
-    :param collab_number: The id of the collaborator
-    :return: JSON string containing data about the collaborator, if found. Else, a JSON string
-    with an exception_handling message
+    Tries to get a collaborator in the database
+    :param collab_number: The number of the collaborator
+    :return: JSON string containing data about the collaborator, if found.
+    Else, a JSON string with an error message
     """
-    # We try to parse the number
+    # Try to parse the number
     try:
         collab_number = int(collab_number)
     except ValueError:
         return jsonify({'Error': f"The parameter '{collab_number}' cannot be parsed"}), 400
 
-    # We try to find the collaborator
+    # Check whether the Collaborator exists
     collaborator = Collaborator.query.filter_by(collab_number=collab_number).first()
-
-    # If the collaborator does not exist
     if not collaborator:
         return jsonify({'Error': f'Collaborator not found with number = {collab_number}'}), 404
 
@@ -120,39 +118,36 @@ def get(collab_number):
 @collaborator_methods.route('/collaborators/update/<collab_number>', methods=['PUT'])
 def update(collab_number):
     """
-    Updates a collaborator in the database
+    Updates a collaborator
     :param collab_number: The number of the collaborator
-    :return: JSON string containing data about the collaborator, if found. Else, a JSON string
-    with an exception_handling message
+    :return: JSON string containing data about the collaborator, if found.
+    Else, a JSON string with an error message
     """
     request_json = request.json
 
     try:
-        JSONValidator.check_parameters(object=Collaborator, json_dict=request.json)
+        JSONValidator.check_parameters(object_model=Collaborator, json_dict=request.json)
     except NotEnoughParametersException as e:
         return e.response_json, 422
     except InvalidParameterTypeException as e:
         return e.response_json, 422
 
-    # We try to find the collaborator
+    # Check whether the Collaborator exists
     query = Collaborator.query.filter_by(collab_number=collab_number)
     collaborator = query.first()
-
-    # If the collaborator does not exist
     if not collaborator:
         return jsonify({'Error': f'Collaborator not found with number = {collab_number}'}), 404
 
-    # Locate the sector based on its name
+    # Check whether the Sector exists
     sector_name = request_json['sector_name']
     sector = Sector.query.filter_by(name=sector_name).first()
-
     if not sector:
         return jsonify({'Error': f'Sector not found with name = {sector_name}'}), 404
 
     # Reuse the request json to update the data
     tmp_json = request_json.copy()
 
-    # Remove the sector_name field and add the sector_id field
+    # Remove the sector_name field and add the sector_id field (for internal house keeping)
     del tmp_json['sector_name']
     tmp_json['sector_id'] = collaborator.sector.id
 
@@ -165,25 +160,23 @@ def update(collab_number):
 @collaborator_methods.route('/collaborators/delete/<collab_number>', methods=['DELETE'])
 def delete(collab_number):
     """
-    Deletes a collaborator from the database
+    Deletes a collaborator
     :param collab_number: The number of the collaborator
-    :return: JSON string containing data about the collaborator, if found. Else, a JSON string
-    with an exception_handling message
+    :return: JSON string containing data about the collaborator, if found.
+    Else, a JSON string with an error message
     """
-    # We try to parse the number
+    # Try to parse the number
     try:
         collab_number = int(collab_number)
     except ValueError:
         return jsonify({'Error': f"The parameter '{collab_number}' cannot be parsed"}), 400
 
-    # We try to find the collaborator
+    # Check whether the Collaborator exists
     collaborator = Collaborator.query.filter_by(collab_number=collab_number).first()
-
-    # If the collaborator does not exist
     if not collaborator:
         return jsonify({'Error': f'Collaborator not found with number = {collab_number}'}), 404
 
     # Delete the data and persist the changes
-    database.delete(object=collaborator)
+    database.delete(the_object=collaborator)
 
     return jsonify({'Message': 'Successfully deleted'}), 200

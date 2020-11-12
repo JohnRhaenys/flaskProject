@@ -20,18 +20,16 @@ class Sector(db.Model):
         self.name = name
 
     def __repr__(self):
-        return f'ID: {Sector.id}, NAME: {self.name}'
+        return f'Database id: {Sector.id}, Sector name: {self.name}'
 
     @staticmethod
     def get_types():
-
+        """
+        Returns a dictionary that maps an attribute to its type
+        (Used by the validator)
+        """
         from validators import type_validator
-
-        types = {
-            'name': type_validator.is_string,
-        }
-
-        return types
+        return {'name': type_validator.is_string}
 
 
 class SectorSchema(ma.Schema):
@@ -39,6 +37,5 @@ class SectorSchema(ma.Schema):
         fields = Sector.fields
 
 
-# Init sector schema
 sector_schema = SectorSchema()
 sectors_schema = SectorSchema(many=True)

@@ -12,8 +12,8 @@ def configure(app):
     ma.init_app(app)
 
 
-def insert(object):
-    db.session.add(object)
+def insert(the_object):
+    db.session.add(the_object)
     db.session.commit()
 
 
@@ -22,6 +22,6 @@ def update(query, json):
     db.session.commit()
 
 
-def delete(object):
-    db.session.delete(object)
+def delete(the_object):
+    db.session.delete(the_object)
     db.session.commit()

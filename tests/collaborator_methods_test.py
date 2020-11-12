@@ -326,7 +326,7 @@ class CollaboratorTestCase(unittest.TestCase):
         url = f'{COLLABORATORS_BASE_URL}/add/{collab_number}'
         self.client().post(url, json=self.collaborator)
 
-        # Try to update the collaborator passing an empty object
+        # Try to update the collaborator passing an empty object_model
         url = f'{COLLABORATORS_BASE_URL}/update/{collab_number}'
         empty_data = {}
         response = self.client().put(url, json=empty_data)

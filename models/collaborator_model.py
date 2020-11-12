@@ -19,7 +19,7 @@ class Collaborator(db.Model):
     def __init__(self, collab_number, full_name, birth_date, current_salary, active, sector_name):
 
         # Used to find a single collaborator in the database
-        # Analogy: like someone's social security number or a student number in a school, for instance
+        # Analogy: like someone's social security number or a student number in a school
         self.collab_number = collab_number
 
         self.full_name = full_name
@@ -30,15 +30,17 @@ class Collaborator(db.Model):
 
     def __repr__(self):
         status = 'Active' if self.active else 'Inactive'
-        return f'ID: {Collaborator.id}, COLLAB NUMBER: {self.collab_number}, ' \
-               f'NAME: {self.full_name}, BIRTH: {self.birth_date},' \
-               f' CURRENT SALARY: {self.current_salary}, STATUS: {status}, SECTOR NAME: {self.sector_name}'
+        return f'Database id: {Collaborator.id}, Collab number: {self.collab_number}, ' \
+               f'Full name: {self.full_name}, Date of Birth: {self.birth_date},' \
+               f' Current Salary: {self.current_salary}, Status: {status}, Sector name: {self.sector_name}'
 
     @staticmethod
     def get_types():
-
+        """
+        Returns a dictionary that maps an attribute to its type
+        (Used by the validator)
+        """
         from validators import type_validator
-
         return {
             'collab_number': type_validator.is_int,
             'full_name': type_validator.is_string,
