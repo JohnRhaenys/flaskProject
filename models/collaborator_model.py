@@ -1,8 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
-
 from core.database import db, ma
-
-
 from marshmallow import fields
 
 

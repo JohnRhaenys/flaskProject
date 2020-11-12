@@ -199,6 +199,52 @@ class CollaboratorTestCase(unittest.TestCase):
         self.assertIn('Joao Pedro', response_json_str)
         self.assertNotIn('Bernardino', response_json_str)
 
+    def test_list_all_collaborators_in_range(self):
+
+        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
+
+        # Insert collaborators
+        collaborator1 = self.collaborator.copy()
+        collaborator1['collab_number'] = 10
+        collaborator1['full_name'] = 'Joao Vitor Andrade'
+
+        collaborator2 = self.collaborator.copy()
+        collaborator2['collab_number'] = 15
+        collaborator2['full_name'] = 'José Da Silva'
+
+        collaborator3 = self.collaborator.copy()
+        collaborator3['collab_number'] = 20
+        collaborator3['full_name'] = 'Maria das Graças'
+
+        collaborator4 = self.collaborator.copy()
+        collaborator4['collab_number'] = 25
+        collaborator4['full_name'] = 'Amanda Pacheco'
+
+        collaborators = [collaborator1, collaborator2, collaborator3, collaborator4]
+        for collaborator in collaborators:
+            self.client().post(
+                f'{COLLABORATORS_BASE_URL}/add/{collaborator["collab_number"]}', json=collaborator
+            )
+
+        lower_bound = 10
+        upper_bound = 20
+
+        # Retrieve the data
+        url = f'{COLLABORATORS_BASE_URL}/all/{lower_bound}/{upper_bound}'
+        response = self.client().get(url)
+
+        # Verify the response code
+        response_code = response.status_code
+        expected_code = 200
+        response_json_str = str(response.get_json())
+
+        # Verify the response content
+        self.assertEqual(expected_code, response_code)
+        self.assertIn('Joao', response_json_str)
+        self.assertIn('José', response_json_str)
+        self.assertIn('Maria', response_json_str)
+        self.assertNotIn('Amanda', response_json_str)
+
     def test_list_all_collaborators_empty(self):
 
         # Retrieve the data

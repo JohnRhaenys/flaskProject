@@ -63,6 +63,24 @@ def list_all_collaborators():
     return jsonify(result)
 
 
+@collaborator_methods.route('/collaborators/all/<int:lower_bound>/<int:upper_bound>', methods=['GET'])
+def list_all_collaborators_in_range(lower_bound, upper_bound):
+    """
+    Lists the collaborators in the database in a range
+    :return: JSON string containing data about all collaborators, if found.
+    Else, a JSON string with an error message
+    """
+    # There is no need to check the lower bound and upper bound values
+    # since flask only accepts positive integers
+    all_collaborators = Collaborator.query.filter(
+        Collaborator.collab_number.between(lower_bound, upper_bound)).all()
+
+    result = collaborators_schema.dump(all_collaborators)
+    if not result:
+        return jsonify({'Error': 'No collaborators found'}), 404
+    return jsonify(result)
+
+
 @collaborator_methods.route('/collaborators/all/<string:name>', methods=['GET'])
 def list_collaborators_filtered_by_name(name):
     """

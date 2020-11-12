@@ -1,10 +1,6 @@
 from sqlalchemy import Column, Integer, String
-
-
 from sqlalchemy.orm import relationship
-
 from core.database import db, ma
-
 from marshmallow import fields
 
 
