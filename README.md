@@ -36,3 +36,18 @@ print('Response JSON: ', response.json())
 Output:  
 Response code:  404  
 Response JSON:  {'Error': 'No collaborators found'}  
+
+LIST ALL COLLABORATORS IN A RANGE:
+```python
+# List all collaborators in a range of values (in this case, the API will return a JSON
+# containing all collaborators with id between 0 and 10 (inclusively)
+lower_bound = 0
+upper_bound = 10
+response = requests.get(f'{COLLABORATORS_URL}/all/{lower_bound}/{upper_bound}')
+print('Response code: ', response.status_code)
+print('Response JSON: ', response.json())
+```
+Output:  
+Response code:  404  
+Response JSON:  {'Error': 'No collaborators found'}  
+
