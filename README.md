@@ -108,3 +108,23 @@ OUTPUT:
 Response code:  200  
 Response JSON:  {'collab_number': 1, 'full_name': 'Bernardino', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 123.45, 'active': True}  
 
+
+**UPDATE A COLLABORATOR**
+```python
+# For instance, update the salary of a collaborator
+updated_collaborator = {
+    'collab_number': 1,
+    'full_name': 'Bernardino',
+    'birth_date': str(today),
+    'current_salary': 999.99,
+    'active': True,
+    'sector_name': 'Tecnologia'
+}
+response = requests.put(f'{COLLABORATORS_URL}/update/1', json=updated_collaborator)
+print('Response code: ', response.status_code)
+print('Response JSON: ', response.json())
+```
+OUTPUT:  
+Response code:  200  
+Response JSON:  {'collab_number': 1, 'full_name': 'Bernardino', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 999.99, 'active': True}  
+
