@@ -33,6 +33,6 @@ print('Response code: ', response.status_code)
 print('Response JSON: ', response.json())
 ```
 
-Output: 
+Output:  
 Response code:  404  
-Response JSON:  {'Error': 'No collaborators found'}
+Response JSON:  {'Error': 'No collaborators found'}  
