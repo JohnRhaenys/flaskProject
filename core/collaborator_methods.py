@@ -86,7 +86,7 @@ def list_all_collaborators_in_range(lower_bound, upper_bound):
 def list_collaborators_filtered_by_name(name):
     """
     Lists the collaborators in the database filtered by name. In other words,
-    returns one or more collaborators if the name given is a substring of any
+    returns one or more collaborators if the given name is a substring of any
     collaborator's name in the database
     :param name: The name to be matched
     :return: JSON string containing data about collaborators, if found.

@@ -67,7 +67,7 @@ def list_sectors_filtered_by_name(name):
 @sector_methods.route('/sectors/<string:name>', methods=['GET'])
 def get(name):
     """
-    Given the name of a sector, tries to get it from the database
+    Tries to get a sector from the database
     :param name: The name of the sector
     :return: JSON string containing data about the sector, if found.
     Else, a JSON string with an error message
