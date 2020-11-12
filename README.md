@@ -17,3 +17,14 @@ A "tests" folder is included in the project. In order to automatically evaluate 
 
 Run:
 To run the API, please execute the "run.py" file. The API will be executed locally (localhost http://127.0.0.1:5000)
+
+
+EXAMPLES:
+
+BASE_URL = 'http://127.0.0.1:5000'
+COLLABORATORS_URL = f'{BASE_URL}/collaborators'
+
+# List all collaborators
+response = requests.get(f'{COLLABORATORS_URL}/all')
+print('Response code: ', response.status_code)
+print('Response JSON: ', response.json())
