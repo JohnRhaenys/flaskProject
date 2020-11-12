@@ -93,3 +93,18 @@ print('Response JSON: ', response.json())
 OUTPUT:    
 Response code:  200  
 Response JSON:  [{'collab_number': 3, 'full_name': 'Joao Pedro', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 6.28, 'active': True}, {'collab_number': 2, 'full_name': 'Joao Vitor', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 3.14, 'active': True}]  
+
+
+**GET A COLLABORATOR**
+```python
+# Get a single collaborator
+collab_number = 1
+response = requests.get(f'{COLLABORATORS_URL}/{collab_number}')
+print('Response code: ', response.status_code)
+print('Response JSON: ', response.json())
+```
+
+OUTPUT:    
+Response code:  200  
+Response JSON:  {'collab_number': 1, 'full_name': 'Bernardino', 'birth_date': '2020-11-12 00:00:00', 'current_salary': 123.45, 'active': True}  
+
