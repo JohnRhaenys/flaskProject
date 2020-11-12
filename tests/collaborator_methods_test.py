@@ -74,7 +74,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify the response content
         response_json_str = str(response.get_json())
-        self.assertIn('parameters are required', response_json_str)
+        self.assertIn('Missing data for required field', response_json_str)
 
     def test_add_collaborator_with_invalid_parameter_types(self):
         """ Test if the API can create a collaborator with invalid parameter types - (POST request) """
@@ -105,7 +105,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify the response content
         response_json_str = str(response.get_json())
-        self.assertIn('Wrong parameter type', response_json_str)
+        self.assertIn('Not a valid', response_json_str)
 
     def test_add_collaborator_already_exists(self):
         """ Test if the API can add a collaborator that already exists - (POST request) """
@@ -256,8 +256,10 @@ class CollaboratorTestCase(unittest.TestCase):
         url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
         self.client().post(url, json=self.collaborator)
 
+        not_in_database = 0
+
         # Try to retrieve a collaborator who does not exist
-        url = f'{COLLABORATORS_BASE_URL}/-200'
+        url = f'{COLLABORATORS_BASE_URL}/{not_in_database}'
         response = self.client().get(url)
 
         # Verify response code
@@ -267,29 +269,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify response content
         response_json_str = str(response.get_json())
-        self.assertIn('Collaborator not found with number = -200', response_json_str)
-
-    def test_get_collaborator_by_number_given_invalid_parameters(self):
-
-        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
-
-        # Add a collaborator
-        url = COLLABORATORS_BASE_URL + f'/add/{self.collaborator["collab_number"]}'
-        self.client().post(url, json=self.collaborator)
-
-        # Try to get a collaborator using an invalid parameter type
-        invalid_number = 'STRING_TEST'
-        url = f'{COLLABORATORS_BASE_URL}/{invalid_number}'
-        response = self.client().get(url)
-
-        # Verify response code
-        response_code = response.status_code
-        expected_code = 400
-        self.assertEqual(response_code, expected_code)
-
-        # Verify response content
-        response_json_str = str(response.get_json())
-        self.assertIn(f"The parameter '{invalid_number}' cannot be parsed", response_json_str)
+        self.assertIn(f'Collaborator not found with number = {not_in_database}', response_json_str)
 
     def test_update_collaborator(self):
 
@@ -338,7 +318,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify response content
         response_json_str = str(response.get_json())
-        self.assertIn('parameters are required', response_json_str)
+        self.assertIn('Missing data for required field', response_json_str)
 
     def test_update_collaborator_given_invalid_parameters(self):
 
@@ -371,7 +351,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify response content
         response_json_str = str(response.get_json())
-        self.assertIn('Wrong parameter type', response_json_str)
+        self.assertIn('Not a valid', response_json_str)
 
     def test_update_collaborator_that_doesnt_exist(self):
 
@@ -389,7 +369,7 @@ class CollaboratorTestCase(unittest.TestCase):
 
         # Verify response content
         response_json_str = str(response.get_json())
-        self.assertEqual(
+        self.assertIn(
             f"{{'Error': 'Collaborator not found with number = {collab_number}'}}", response_json_str
         )
 
@@ -431,30 +411,6 @@ class CollaboratorTestCase(unittest.TestCase):
             f"{{'Error': 'Collaborator not found with number = {collaborator_number}'}}", response_json_str
         )
 
-    def test_delete_collaborator_given_invalid_parameters(self):
-
-        self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
-
-        collaborator_number = self.collaborator['collab_number']
-
-        # Add a collaborator
-        url = COLLABORATORS_BASE_URL + f'/add/{collaborator_number}'
-        self.client().post(url, json=self.collaborator)
-
-        # Try to remove the collaborator
-        invalid_number = 'NUMBER_TEST'
-        url = f'{COLLABORATORS_BASE_URL}/delete/{invalid_number}'
-        response = self.client().delete(url)
-
-        # Verify response code
-        response_code = response.status_code
-        expected_code = 400
-        self.assertEqual(response_code, expected_code)
-
-        # Verify response content
-        response_json_str = str(response.get_json())
-        self.assertIn('cannot be parsed', response_json_str)
-
     def test_delete_collaborator_that_doesnt_exist(self):
 
         self.client().post(f'{SECTORS_BASE_URL}/add/{self.sector["name"]}', json=self.sector)
@@ -466,7 +422,7 @@ class CollaboratorTestCase(unittest.TestCase):
         self.client().post(url, json=self.collaborator)
 
         # Try to remove the collaborator
-        not_in_database = -100
+        not_in_database = 0
         url = f'{COLLABORATORS_BASE_URL}/delete/{not_in_database}'
         response = self.client().delete(url)
 

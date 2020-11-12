@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship
 
 from core.database import db, ma
 
+from marshmallow import fields
+
 
 class Sector(db.Model):
 
@@ -22,17 +24,11 @@ class Sector(db.Model):
     def __repr__(self):
         return f'Database id: {Sector.id}, Sector name: {self.name}'
 
-    @staticmethod
-    def get_types():
-        """
-        Returns a dictionary that maps an attribute to its type
-        (Used by the validator)
-        """
-        from validators import type_validator
-        return {'name': type_validator.is_string}
-
 
 class SectorSchema(ma.Schema):
+
+    name = fields.Str(required=True)
+
     class Meta:
         fields = Sector.fields
 

@@ -1,26 +1,22 @@
 from flask import jsonify, Blueprint, request
 
 from core import database
-from exception_handling.my_exceptions import InvalidParameterTypeException, NotEnoughParametersException
-from validators.json_validator import JSONValidator
 from models.sector_model import Sector, sectors_schema, sector_schema
 
 sector_methods = Blueprint('sector_methods', __name__)
 
 
-@sector_methods.route('/sectors/add/<sector_name>', methods=['POST'])
+@sector_methods.route('/sectors/add/<string:sector_name>', methods=['POST'])
 def add(sector_name):
     """
     Inserts a new sector into the database
     :return: JSON string containing data about the sector, if added successfully.
     Else, a JSON string with an error message
     """
-    try:
-        JSONValidator.check_parameters(object_model=Sector, json_dict=request.json)
-    except NotEnoughParametersException as e:
-        return e.response_json, 422
-    except InvalidParameterTypeException as e:
-        return e.response_json, 422
+    # Validate the json
+    errors = sector_schema.validate(request.json)
+    if errors:
+        return jsonify(errors), 422
 
     # Check whether the Sector does not already exist
     sector = Sector.query.filter_by(name=sector_name).first()
@@ -48,8 +44,8 @@ def list_all_sectors():
     return jsonify(result)
 
 
-@sector_methods.route('/sectors/all/<name>', methods=['GET'])
-def list_filtered_sectors(name):
+@sector_methods.route('/sectors/all/<string:name>', methods=['GET'])
+def list_sectors_filtered_by_name(name):
     """
     Lists the sectors in the database filtered by name
     :return: JSON string containing data about all sectors, if found.
@@ -66,7 +62,7 @@ def list_filtered_sectors(name):
     return jsonify(result), 200
 
 
-@sector_methods.route('/sectors/<name>', methods=['GET'])
+@sector_methods.route('/sectors/<string:name>', methods=['GET'])
 def get(name):
     """
     Given the name of a sector, tries to get it from the database
@@ -80,7 +76,7 @@ def get(name):
     return sector_schema.jsonify(sector), 200
 
 
-@sector_methods.route('/sectors/update/<sector_name>', methods=['PUT'])
+@sector_methods.route('/sectors/update/<string:sector_name>', methods=['PUT'])
 def update(sector_name):
     """
     Updates a sector in the database
@@ -89,13 +85,9 @@ def update(sector_name):
     Else, a JSON string with an error message
     """
     request_json = request.json
-
-    try:
-        JSONValidator.check_parameters(object_model=Sector, json_dict=request_json)
-    except NotEnoughParametersException as e:
-        return e.response_json, 422
-    except InvalidParameterTypeException as e:
-        return e.response_json, 422
+    errors = sector_schema.validate(request_json)
+    if errors:
+        return jsonify(errors), 422
 
     # Check whether the Sector does not already exist
     query = Sector.query.filter_by(name=sector_name)
@@ -109,7 +101,7 @@ def update(sector_name):
     return jsonify(request.json), 200
 
 
-@sector_methods.route('/sectors/delete/<sector_name>', methods=['DELETE'])
+@sector_methods.route('/sectors/delete/<string:sector_name>', methods=['DELETE'])
 def delete(sector_name):
     """
     Deletes a sector from the database

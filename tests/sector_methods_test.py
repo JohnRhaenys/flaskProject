@@ -49,7 +49,7 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
 
         response_json_str = str(response.get_json())
-        self.assertIn('parameters are required', response_json_str)
+        self.assertIn('Missing data for required field', response_json_str)
 
     def test_add_sector_given_invalid_parameters(self):
 
@@ -65,7 +65,7 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
 
         response_json_str = str(response.get_json())
-        self.assertIn('Wrong parameter type', response_json_str)
+        self.assertIn('Not a valid', response_json_str)
 
     def test_add_sector_that_already_exists(self):
 
@@ -246,7 +246,7 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
 
         response_json_str = str(response.get_json())
-        self.assertIn('parameters are required', response_json_str)
+        self.assertIn('Missing data for required field', response_json_str)
 
     def test_update_sector_given_invalid_parameters(self):
 
@@ -265,7 +265,7 @@ class SectorTestCase(unittest.TestCase):
         self.assertEqual(expected_code, response_code)
 
         response_json_str = str(response.get_json())
-        self.assertIn('Wrong parameter type', response_json_str)
+        self.assertIn('Not a valid', response_json_str)
 
     def test_update_sector_that_doesnt_exist(self):
 

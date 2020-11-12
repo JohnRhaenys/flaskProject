@@ -3,6 +3,9 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
 from core.database import db, ma
 
 
+from marshmallow import fields
+
+
 class Collaborator(db.Model):
 
     fields = ('collab_number', 'full_name', 'birth_date', 'current_salary', 'active', 'sector_name')
@@ -34,24 +37,16 @@ class Collaborator(db.Model):
                f'Full name: {self.full_name}, Date of Birth: {self.birth_date},' \
                f' Current Salary: {self.current_salary}, Status: {status}, Sector name: {self.sector_name}'
 
-    @staticmethod
-    def get_types():
-        """
-        Returns a dictionary that maps an attribute to its type
-        (Used by the validator)
-        """
-        from validators import type_validator
-        return {
-            'collab_number': type_validator.is_int,
-            'full_name': type_validator.is_string,
-            'birth_date': type_validator.is_string,
-            'current_salary': type_validator.is_float,
-            'active': type_validator.is_bool,
-            'sector_name': type_validator.is_string
-        }
-
 
 class CollaboratorSchema(ma.Schema):
+
+    collab_number = fields.Int(required=True)
+    full_name = fields.Str(required=True)
+    birth_date = fields.Str(required=True)
+    current_salary = fields.Float(required=True)
+    active = fields.Boolean(required=True)
+    sector_name = fields.Str(required=True)
+
     class Meta:
         # We set this to True in order to keep the JSON response ordered
         ordered = True
