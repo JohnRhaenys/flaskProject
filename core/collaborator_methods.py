@@ -13,6 +13,7 @@ collaborator_methods = Blueprint('collaborator_methods', __name__)
 def add(collab_number):
     """
     Inserts a new collaborator into the database
+    :param collab_number: The number of the collaborator
     :return: JSON string containing data about the collaborator, if added successfully.
     Else, a JSON string with an error message
     """
@@ -87,6 +88,7 @@ def list_collaborators_filtered_by_name(name):
     Lists the collaborators in the database filtered by name. In other words,
     returns one or more collaborators if the name given is a substring of any
     collaborator's name in the database
+    :param name: The name to be matched
     :return: JSON string containing data about collaborators, if found.
     Else, a JSON string with an error message
     """
