@@ -19,7 +19,7 @@ Run:
 To run the API, please execute the "run.py" file. The API will be executed locally (localhost http://127.0.0.1:5000)
 
 
-EXAMPLES:
+EXAMPLES (THE SAME USAGE APPLIES TO THE SECTORS):
 
 **ADD A COLLABORATOR**
 ```python
