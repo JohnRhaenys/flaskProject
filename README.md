@@ -34,5 +34,5 @@ print('Response JSON: ', response.json())
 ```
 
 Output: 
-Response code:  404
+Response code:  404  
 Response JSON:  {'Error': 'No collaborators found'}
