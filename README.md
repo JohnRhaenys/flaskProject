@@ -21,7 +21,7 @@ To run the API, please execute the "run.py" file. The API will be executed local
 
 EXAMPLES:
 
-LIST ALL COLLABORATORS:
+**LIST ALL COLLABORATORS:**
 
 ```python
 BASE_URL = 'http://127.0.0.1:5000'
@@ -37,7 +37,7 @@ Output:
 Response code:  404  
 Response JSON:  {'Error': 'No collaborators found'}  
 
-LIST ALL COLLABORATORS IN A RANGE:
+**LIST ALL COLLABORATORS IN A RANGE:**
 ```python
 # List all collaborators in a range of values (in this case, the API will return a JSON
 # containing all collaborators with id between 0 and 10 (inclusively)
