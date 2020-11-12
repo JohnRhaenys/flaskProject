@@ -28,6 +28,7 @@ BASE_URL = 'http://127.0.0.1:5000'
 COLLABORATORS_URL = f'{BASE_URL}/collaborators'
 
 # List all collaborators
+# Url = 'http://127.0.0.1:5000/collaborators/all
 response = requests.get(f'{COLLABORATORS_URL}/all')
 print('Response code: ', response.status_code)
 print('Response JSON: ', response.json())
@@ -43,6 +44,8 @@ Response JSON:  {'Error': 'No collaborators found'}
 # containing all collaborators with id between 0 and 10 (inclusively)
 lower_bound = 0
 upper_bound = 10
+
+# Url = 'http://127.0.0.1:5000/collaborators/all/0/10
 response = requests.get(f'{COLLABORATORS_URL}/all/{lower_bound}/{upper_bound}')
 print('Response code: ', response.status_code)
 print('Response JSON: ', response.json())
